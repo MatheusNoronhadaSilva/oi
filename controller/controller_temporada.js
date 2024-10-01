@@ -5,19 +5,19 @@
 *******************************************************/
 
 const message = require('./modulo/config.js');
-const salaDAO = require('../model/sala.js');
+const temporadaDAO = require('../model/temporada.js');
 
-// Função para retornar todas as salas
-const getSalas = async function () {
+// Função para retornar todas as temporadas
+const getTemporadas = async function () {
     try {
-        let salasJSON = {};
-        let dadosSalas = await salaDAO.selectSalas();
+        let temporadasJSON = {};
+        let dadosTemporadas = await temporadaDAO.selectTemporadas();
         
-        if (dadosSalas) {
-            salasJSON.salas = dadosSalas;
-            salasJSON.quantidade = dadosSalas.length;
-            salasJSON.status_code = 200;
-            return salasJSON;
+        if (dadosTemporadas) {
+            temporadasJSON.temporadas = dadosTemporadas;
+            temporadasJSON.quantidade = dadosTemporadas.length;
+            temporadasJSON.status_code = 200;
+            return temporadasJSON;
         } else {
             return message.ERROR_NOT_FOUND;
         }
@@ -27,15 +27,15 @@ const getSalas = async function () {
     }
 };
 
-// Função para buscar uma sala por ID
-const getBuscarSalaId = async function (id) {
+// Função para buscar uma temporada por ID
+const getBuscarTemporadaId = async function (id) {
     try {
         if (!id || isNaN(id)) return message.ERROR_INVALID_ID;
 
-        let dadosSala = await salaDAO.selectByIdSala(id);
-        if (dadosSala) {
-            if (dadosSala.length > 0) {
-                return { sala: dadosSala, status_code: 200 };
+        let dadosTemporada = await temporadaDAO.selectByIdTemporada(id);
+        if (dadosTemporada) {
+            if (dadosTemporada.length > 0) {
+                return { temporada: dadosTemporada, status_code: 200 };
             } else {
                 return message.ERROR_NOT_FOUND;
             }
@@ -48,27 +48,27 @@ const getBuscarSalaId = async function (id) {
     }
 };
 
-// Função para inserir uma nova sala
-const setInserirNovaSala = async function (dadosSala, contentType) {
+// Função para inserir uma nova temporada
+const setInserirNovaTemporada = async function (dadosTemporada, contentType) {
     try {
         if (String(contentType).toLowerCase() !== 'application/json') {
             return message.ERROR_CONTENT_TYPE;
         }
 
         // Valida campos obrigatórios
-        const validationError = validateSala(dadosSala);
+        const validationError = validateTemporada(dadosTemporada);
         if (validationError) {
             return validationError;
         }
 
-        // Inserir sala no banco de dados
-        const novaSala = await salaDAO.insertSala(dadosSala);
-        if (novaSala) {
-            const ultimoId = await salaDAO.lastIDSala();
-            dadosSala.id = ultimoId[0].id;
+        // Inserir temporada no banco de dados
+        const novaTemporada = await temporadaDAO.insertTemporada(dadosTemporada);
+        if (novaTemporada) {
+            const ultimoId = await temporadaDAO.lastIDTemporada();
+            dadosTemporada.id = ultimoId[0].id;
 
             return {
-                sala: dadosSala,
+                temporada: dadosTemporada,
                 status_code: message.SUCCESS_CREATED_ITEM.status_code,
                 message: message.SUCCESS_CREATED_ITEM.message
             };
@@ -81,18 +81,18 @@ const setInserirNovaSala = async function (dadosSala, contentType) {
     }
 };
 
-// Função para atualizar uma sala
-const setAtualizarSala = async function (id, dadosSala, contentType) {
+// Função para atualizar uma temporada
+const setAtualizarTemporada = async function (id, dadosTemporada, contentType) {
     try {
         if (String(contentType).toLowerCase() == 'application/json') {
             if (!id || isNaN(id)) return message.ERROR_INVALID_ID;
 
-            let sala = await salaDAO.selectByIdSala(id);
-            if (sala) {
-                let salaAtualizada = await salaDAO.updateSala(id, dadosSala);
-                if (salaAtualizada) {
+            let temporada = await temporadaDAO.selectByIdTemporada(id);
+            if (temporada) {
+                let temporadaAtualizada = await temporadaDAO.updateTemporada(id, dadosTemporada);
+                if (temporadaAtualizada) {
                     return {
-                        sala: dadosSala,
+                        temporada: dadosTemporada,
                         status_code: message.SUCCESS_UPDATED_ITEM.status_code,
                         message: message.SUCCESS_UPDATED_ITEM.message
                     };
@@ -111,12 +111,12 @@ const setAtualizarSala = async function (id, dadosSala, contentType) {
     }
 };
 
-// Função para deletar uma sala
-const setExcluirSala = async function (id) {
+// Função para deletar uma temporada
+const setExcluirTemporada = async function (id) {
     try {
         if (!id || isNaN(id)) return message.ERROR_INVALID_ID;
 
-        let comando = await salaDAO.deleteSala(id);
+        let comando = await temporadaDAO.deleteTemporada(id);
         if (comando) {
             return message.SUCCESS_DELETED_ITEM;
         } else {
@@ -128,26 +128,20 @@ const setExcluirSala = async function (id) {
 };
 
 // Função para validar os campos obrigatórios
-function validateSala(dadosSala) {
-    if (!dadosSala.id_rank || isNaN(dadosSala.id_rank)) {
+function validateTemporada(dadosTemporada) {
+    if (!dadosTemporada.data_inicio) {
         return message.ERROR_REQUIRED_FIELDS;
     }
-    if (!dadosSala.numero || isNaN(dadosSala.numero)) {
-        return message.ERROR_REQUIRED_FIELDS;
-    }
-    if (dadosSala.max_pessoas && (isNaN(dadosSala.max_pessoas) || dadosSala.max_pessoas <= 0)) {
-        return message.ERROR_REQUIRED_FIELDS;
-    }
-    if (!dadosSala.temporada_id || isNaN(dadosSala.temporada_id)) {
+    if (!dadosTemporada.data_fim) {
         return message.ERROR_REQUIRED_FIELDS;
     }
     return null;
 }
 
 module.exports = {
-    getSalas,
-    getBuscarSalaId,
-    setInserirNovaSala,
-    setAtualizarSala,
-    setExcluirSala,
+    getTemporadas,
+    getBuscarTemporadaId,
+    setInserirNovaTemporada,
+    setAtualizarTemporada,
+    setExcluirTemporada,
 };

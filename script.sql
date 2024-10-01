@@ -114,15 +114,29 @@ CREATE TABLE  tbl_ranks(
 -- Criação da tabela tbl_salas
 CREATE TABLE tbl_salas (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    id_rank INT,
+    id_rank INT,  -- Referência ao rank da sala
     numero INT,
     max_pessoas INT DEFAULT 25,
     pessoas_atual INT DEFAULT 0,
-    FOREIGN KEY (id_rank) REFERENCES tbl_ranks(id)
+    temporada_id INT,  -- Chave estrangeira para a temporada
+    FOREIGN KEY (id_rank) REFERENCES tbl_ranks(id),
+    FOREIGN KEY (temporada_id) REFERENCES tbl_temporadas(id)  -- Chave estrangeira para a temporada atual
 );
 
+CREATE TABLE tbl_temporadas (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    data_inicio DATE NOT NULL,  -- Data de início da temporada
+    data_fim DATE NOT NULL      -- Data de término da temporada
+);
 
 select * from tbl_salas;
+
+
+INSERT INTO tbl_temporadas (data_inicio, data_fim)
+VALUES (
+    '2024-10-01',   -- Data de início da primeira temporada
+    '2024-10-20'    -- Data de término da primeira temporada
+);
 
 -- Inserindo dados na tabela ranks
 INSERT INTO tbl_ranks (nome, nivel, num_salas) VALUES
@@ -154,6 +168,8 @@ INSERT INTO tbl_salas (id_rank, numero, max_pessoas) VALUES
 (2, 8, 25),
 (2, 9, 25),
 (2, 10, 25);
+
+
 
 -- Consultar os Ranks
 SELECT 

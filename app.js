@@ -45,6 +45,7 @@ const controllerRespostaMultipla = require ('./controller/controller_respostaMul
 const controllerRespostaVerdadeiroFalso = require ('./controller/controller_verdadeiroFalso.js')
 const controllerSalas = require ('./controller/controller_salas.js')
 const controllerRank = require ('./controller/controller_rank.js')
+const controllerTemporadas = require ('./controller/controller_temporada.js')
 
 
 /*******************************************************************************************************/
@@ -1052,49 +1053,42 @@ app.delete('/v1/studyfy/resposta-vf/:id', async (req, res) => {
 
 
 
-//       --------------------   CRUD SALAS ---------------------        //
+// --------------------   CRUD SALAS --------------------- //
 
-
-// Endpoint: Listar todas as respostas de correspondência
+// Endpoint: Listar todas as salas
 app.get('/v1/studyfy/salas', async (req, res) => {
     let resultado = await controllerSalas.getSalas();
     res.status(resultado.status_code).json(resultado);
 });
 
-
-// Endpoint: Buscar resposta de correspondência por ID
+// Endpoint: Buscar sala por ID
 app.get('/v1/studyfy/salas/:id', async (req, res) => {
     let idSala = req.params.id;
     let resultado = await controllerSalas.getBuscarSalaId(idSala);
     res.status(resultado.status_code).json(resultado);
 });
 
-
-// Endpoint: Inserir nova resposta de lacunas
+// Endpoint: Inserir nova sala
 app.post('/v1/studyfy/sala', cors(), bodyParserJSON, async function(request, response) {
     let contentType = request.headers['content-type'];
     let dadosBody = request.body;
     let resultDadosSala = await controllerSalas.setInserirNovaSala(dadosBody, contentType);
-    response.status(resultDadosSala.status_code);
-    response.json(resultDadosSala);
+    response.status(resultDadosSala.status_code).json(resultDadosSala);
 });
 
-
-// EndPoint: Atualiza questão pelo ID
+// Endpoint: Atualizar sala pelo ID
 app.put('/v1/studyfy/sala/:id', cors(), bodyParserJSON, async function(request, response) {
     let contentType = request.headers['content-type'];
     let dadosBody = request.body;
     let idSala = request.params.id;
     let dadosRespostasSala = await controllerSalas.setAtualizarSala(idSala, dadosBody, contentType);
-    response.status( dadosRespostasSala.status_code);
-    response.json( dadosRespostasSala);
+    response.status(dadosRespostasSala.status_code).json(dadosRespostasSala);
 });
 
-
-// Endpoint: Deletar resposta de correspondência
+// Endpoint: Deletar sala
 app.delete('/v1/studyfy/sala/:id', async (req, res) => {
-    let idRespostaSala = req.params.id;
-    let resultado = await controllerSalas.setExcluirSala(idRespostaSala);
+    let idSala = req.params.id;
+    let resultado = await controllerSalas.setExcluirSala(idSala);
     res.status(resultado.status_code).json(resultado);
 });
 
@@ -1162,5 +1156,47 @@ app.put('/v1/studyfy/rank/:id', cors(), bodyParserJSON, async function(request, 
 app.delete('/v1/studyfy/rank/:id', async (req, res) => {
     let idRank = req.params.id;
     let resultado = await controllerRank.setExcluirRank(idRank);
+    res.status(resultado.status_code).json(resultado);
+});
+
+
+
+
+// --------------------   CRUD TEMPORADAS --------------------- //
+
+// Endpoint: Listar todas as temporadas
+app.get('/v1/studyfy/temporadas', async (req, res) => {
+    let resultado = await controllerTemporadas.getTemporadas();
+    res.status(resultado.status_code).json(resultado);
+});
+
+// Endpoint: Buscar temporada por ID
+app.get('/v1/studyfy/temporadas/:id', async (req, res) => {
+    let idTemporada = req.params.id;
+    let resultado = await controllerTemporadas.getBuscarTemporadaId(idTemporada);
+    res.status(resultado.status_code).json(resultado);
+});
+
+// Endpoint: Inserir nova temporada
+app.post('/v1/studyfy/temporada', cors(), bodyParserJSON, async function(request, response) {
+    let contentType = request.headers['content-type'];
+    let dadosBody = request.body;
+    let resultDadosTemporada = await controllerTemporadas.setInserirNovaTemporada(dadosBody, contentType);
+    response.status(resultDadosTemporada.status_code).json(resultDadosTemporada);
+});
+
+// Endpoint: Atualizar temporada pelo ID
+app.put('/v1/studyfy/temporada/:id', cors(), bodyParserJSON, async function(request, response) {
+    let contentType = request.headers['content-type'];
+    let dadosBody = request.body;
+    let idTemporada = request.params.id;
+    let dadosTemporadaAtualizada = await controllerTemporadas.setAtualizarTemporada(idTemporada, dadosBody, contentType);
+    response.status(dadosTemporadaAtualizada.status_code).json(dadosTemporadaAtualizada);
+});
+
+// Endpoint: Deletar temporada
+app.delete('/v1/studyfy/temporada/:id', async (req, res) => {
+    let idTemporada = req.params.id;
+    let resultado = await controllerTemporadas.setExcluirTemporada(idTemporada);
     res.status(resultado.status_code).json(resultado);
 });
